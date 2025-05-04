@@ -1,0 +1,55 @@
+global:
+  imagePullPolicy: Always
+
+analytics:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/analytics:latest'
+
+course:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/course:latest'
+
+feedback:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/feedback:latest'
+
+gateway:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/gateway:latest'
+  port: 3000
+
+lesson:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/lesson:latest'
+
+student:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/student:latest'
+
+test:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/test:latest'
+
+user:
+  enabled: true
+  replicas: 1
+  image: '365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/user:latest'
+
+database:
+  host: postgres.c5ssu0c42q05.us-east-1.rds.amazonaws.com
+  port: 5432
+  name: postgres
+  secretName: education-platform-db-secrets
+
+auth:
+  secretName: education-platform-secrets
+
+rabbitmq:
+  secretName: rabbitmq-secrets

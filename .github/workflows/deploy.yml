@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 365610828751.dkr.ecr.us-east-1.amazonaws.com
+
+      - name: Build and Push Docker Images
+        run: |
+          services=(gateway user course lesson test analytics feedback student)
+
+          for service in "${services[@]}"; do
+            IMAGE="365610828751.dkr.ecr.us-east-1.amazonaws.com/education-platform/$service:latest"
+            docker build -t $IMAGE -f apps/$service/Dockerfile .
+            docker push $IMAGE
+          done
+
+          wait
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name education-platform --region ${{ secrets.AWS_REGION }}
+
+      - name: Restart deployments
+        run: |
+          kubectl rollout restart deployment gateway -n education-platform
+          kubectl rollout restart deployment user -n education-platform
+          kubectl rollout restart deployment course -n education-platform
+          kubectl rollout restart deployment lesson -n education-platform
+          kubectl rollout restart deployment test -n education-platform
+          kubectl rollout restart deployment analytics -n education-platform
+          kubectl rollout restart deployment feedback -n education-platform
+          kubectl rollout restart deployment student -n education-platform

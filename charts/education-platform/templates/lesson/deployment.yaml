@@ -1,0 +1,25 @@
+{{- if .Values.lesson.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lesson
+  labels:
+    app: lesson
+spec:
+  replicas: {{ .Values.lesson.replicas }}
+  selector:
+    matchLabels:
+      app: lesson
+  template:
+    metadata:
+      labels:
+        app: lesson
+    spec:
+      containers:
+        - name: lesson
+          image: {{ .Values.lesson.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          env:
+            {{- include "common.env" . | nindent 12 }}
+{{- end }}
+

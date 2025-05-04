@@ -1,0 +1,25 @@
+{{- if .Values.feedback.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feedback
+  labels:
+    app: feedback
+spec:
+  replicas: {{ .Values.feedback.replicas }}
+  selector:
+    matchLabels:
+      app: feedback
+  template:
+    metadata:
+      labels:
+        app: feedback
+    spec:
+      containers:
+        - name: feedback
+          image: {{ .Values.feedback.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          env:
+            {{- include "common.env" . | nindent 12 }}
+{{- end }}
+
