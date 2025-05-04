@@ -1,0 +1,25 @@
+{{- if .Values.student.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student
+  labels:
+    app: student
+spec:
+  replicas: {{ .Values.student.replicas }}
+  selector:
+    matchLabels:
+      app: student
+  template:
+    metadata:
+      labels:
+        app: student
+    spec:
+      containers:
+        - name: student
+          image: {{ .Values.student.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          env:
+            {{- include "common.env" . | nindent 12 }}
+{{- end }}
+

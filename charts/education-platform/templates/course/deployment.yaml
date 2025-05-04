@@ -1,0 +1,25 @@
+{{- if .Values.course.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: course
+  labels:
+    app: course
+spec:
+  replicas: {{ .Values.course.replicas }}
+  selector:
+    matchLabels:
+      app: course
+  template:
+    metadata:
+      labels:
+        app: course
+    spec:
+      containers:
+        - name: course
+          image: {{ .Values.course.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          env:
+            {{- include "common.env" . | nindent 12 }}
+{{- end }}
+
